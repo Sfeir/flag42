@@ -11,6 +11,8 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"strconv"
+	"github.com/nfnt/resize"
+	"log"
 )
 
 // returns the dominant color of a palette
@@ -116,11 +118,12 @@ func PixColor(url string, c appengine.Context) (color.Color, error) {
 	if errh != nil {
 		return nil, errh
 	}
-	defer resp.Body.Close()
-	m, _, err := image.Decode(resp.Body)
+	r, _, err := image.Decode(resp.Body)
 	if err != nil {
+		log.Print("erreur = "+url)
 		return nil, err
 	}
+	m:=resize.Resize(64,64,r, resize.Lanczos3)
 	blocksize := 5
 	tableau := make(map[string]int)
 	rgb := color.RGBA{R: 0, G: 0, B: 0, A: 1}
