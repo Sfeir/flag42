@@ -4,7 +4,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 
-	"models"
+	"database/models"
 )
 
 func AddData(img models.Image, c appengine.Context) string {

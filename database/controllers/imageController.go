@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"models"
-	"service"
+	"database/models"
+	"database/service"
 )
 
 var img models.Image
