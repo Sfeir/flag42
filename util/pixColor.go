@@ -104,7 +104,7 @@ func addTab(tab map[string]int, hex string){
 }
 // takes an image url and returns the dominant color
 // of type color.RGBA
-func PixColor(url string) color.RGBA{
+func PixColor(url string) color.Color{
 	resp, errh := http.Get(url)
 	if errh!=nil{
 		log.Fatal("get error:")
