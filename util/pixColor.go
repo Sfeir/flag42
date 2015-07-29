@@ -2,41 +2,26 @@
 package util
 
 import (
-	"appengine"
-	"appengine/urlfetch"
-	"fmt"
 	"image"
 	"image/color"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+	"appengine"
+	"appengine/urlfetch"
+	"fmt"
 	"strconv"
-	"github.com/nfnt/resize"
+	//"github.com/nfnt/resize"
 	"log"
 )
 
-// returns the dominant color of a palette
-func dominantColor(palette map[string]int) string {
-	var max = 0
-	var result string
-	for couleur, nombre := range palette {
-		if nombre > max {
-			max = nombre
-			result = couleur
-			fmt.Printf("color=%s, number=%d\n", couleur, nombre)
-		}
-	}
-	return result
-}
-
 // converts a 8 bits integer to hexadecimal in string format
 func int2hex(i uint8) string {
-	hex := fmt.Sprintf("%02x", i)
-	return string(hex)
+	return string(fmt.Sprintf("%02x", i))
 }
 
 // converts a 2 characters hexadecimal to a 8 bits integer
-func alamain(hex string) uint8 {
+func hex28bit(hex string) uint8 {
 	result := 0
 	for i := 0; i < 2; i++ {
 		switch hex[i] {
@@ -73,9 +58,9 @@ func alamain(hex string) uint8 {
 // converts the whole hexadecimal of 24 bits to 3 integers of 8 bits each
 // defining the red, green and blue color
 func hex2int(h string) (uint8, uint8, uint8) {
-	sr := ""
-	sg := ""
-	sb := ""
+	sr := string(h[2])+string(h[3])
+	sg := string(h[4])+string(h[5])
+	sb := string(h[6])+string(h[7])
 	for i := 0; i < len(h); i++ {
 		if 2 <= i && i <= 3 {
 			sr += string(h[i])
@@ -85,29 +70,10 @@ func hex2int(h string) (uint8, uint8, uint8) {
 			sb += string(h[i])
 		}
 	}
-	r := alamain(sr)
-	g := alamain(sg)
-	b := alamain(sb)
-	fmt.Printf("r=%d\n", r)
-	fmt.Printf("g=%d\n", g)
-	fmt.Printf("b=%d\n", b)
+	r := hex28bit(sr)
+	g := hex28bit(sg)
+	b := hex28bit(sb)
 	return uint8(r), uint8(g), uint8(b)
-}
-
-// add a hexadecimal color in a map
-// the map represents the number of each colors
-func addTab(tab map[string]int, hex string) {
-	inside := false
-	for name, _ := range tab {
-		if name == hex {
-			inside = true
-			tab[name]++
-			break
-		}
-	}
-	if inside == false {
-		tab[hex] = 1
-	}
 }
 
 // takes an image url and returns the dominant color
@@ -118,30 +84,32 @@ func PixColor(url string, c appengine.Context) (color.Color, error) {
 	if errh != nil {
 		return nil, errh
 	}
-	r, _, err := image.Decode(resp.Body)
+	m,_,err := image.Decode(resp.Body)
 	if err != nil {
-		log.Print("erreur = "+url)
+		log.Printf("StatusCode=%d",resp.StatusCode)
 		return nil, err
 	}
-	m:=resize.Resize(64,64,r, resize.Lanczos3)
-	blocksize := 5
+	blocksize := 4
 	tableau := make(map[string]int)
 	rgb := color.RGBA{R: 0, G: 0, B: 0, A: 1}
+	//m:=resize.Resize(64,64,r, resize.Bilinear)
 	bounds := m.Bounds()
+	dominantValue:=0
+	dominantColor:=""
 	for j := bounds.Min.X; j < bounds.Max.X; j += blocksize {
 		for i := bounds.Min.Y; i < bounds.Max.Y; i += blocksize {
 			couleur := m.At(j, i)
 			r, g, b, _ := couleur.RGBA()
 			hexa := "0x" + int2hex(uint8(r)) + int2hex(uint8(g)) + int2hex(uint8(b))
-			addTab(tableau, hexa)
+			tableau[hexa]++
+			// saves the dominant color if it is one
+			if tableau[hexa]>dominantValue{
+				dominantValue=tableau[hexa]
+				dominantColor=hexa
+			}
 		}
 	}
-	result := dominantColor(tableau)
+	result:=dominantColor
 	rgb.R, rgb.G, rgb.B = hex2int(result)
 	return rgb, nil
-} /*
-func main(){
-	couleur:=PixColor("http://i.imgur.com/Peq1U1u.jpg")
-	//couleur:=PixColor("https://pmcmovieline.files.wordpress.com/2012/02/alextuis_bruceleespidey__120202000223.jpg?w=550&h=850")
-	fmt.Printf("{r,g,b}=%d\n", couleur)
-}*/
+}
