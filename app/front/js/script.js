@@ -1,5 +1,5 @@
 var conf = {
-    pictures_api_url: "",
+    pictures_api_url: "https://storage.googleapis.com/flag-42/eiffeltower",
     flag_column_count: 10,
     flag_row_count: 10,
     zoom_max: 8,
@@ -30,12 +30,7 @@ var createMap = function(layout) {
 };
 
 var getPicture = function(layout, x, y) {
-    $.ajax({
-        url: conf.pictures_api_url + '/' + layout + '/' + x + '_' + y + '.png'
-    })
-    .done(function( data ) {
-        return data;
-    });
+    return conf.pictures_api_url + '/' + layout + '/' + x + '_' + y + '.png';
 };
 
 var init_structure = function() {
@@ -55,13 +50,13 @@ var init_structure = function() {
 var zoom_in = function() {
     if(conf.layout < conf.zoom_max) {
         conf.layout++;
-        createMap();
+        createMap(conf.layout);
     }
 };
 
 var zoom_out = function() {
     if(conf.layout > conf.zoom_min) {
         conf.layout--;
-        createMap();
+        createMap(conf.layout);
     }
 };
