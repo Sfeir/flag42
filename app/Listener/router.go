@@ -7,13 +7,14 @@ import (
 	"github.com/carbocation/go-instagram/instagram"
 	"github.com/gorilla/mux"
 	"io"
+	"strconv"
 	"appengine/datastore"
 	"appengine/memcache"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"util"
-
+	"image/color"
 	"database/controllers"
 	"database/models"
 )
@@ -45,12 +46,14 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 			item, err := memcache.Get(c, "last")
 			url := v.Images.StandardResolution.URL
 			if err == nil && string(item.Value) == url {
+				c.Infof("Cache %d", i)
 				break
 			}
 			q := datastore.NewQuery("image").Filter("Link =", url)
 			var link []models.Image
 			q.GetAll(c, &link)
 			if len(link) != 0 {
+				c.Infof("Data %d", i)
 				break
 			}
 			rgb, err := util.PixColor(url, c)
@@ -74,8 +77,28 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func sendLinks(w http.ResponseWriter, req *http.Request) {
+	m, _ := url.ParseQuery(req.URL.RawQuery)
+	r, _ := strconv.Atoi(m["r"][0])
+	g, _ := strconv.Atoi(m["g"][0])
+	b, _ := strconv.Atoi(m["b"][0])
+	col := color.RGBA {
+		R: uint8(r),
+		G: uint8(g),
+		B: uint8(b),
+		A:0xff,
+	}
+	count, _ := strconv.Atoi(m["count"][0])
+	str := controllers.GetImages(col, count, appengine.NewContext(req))
+	json, _ := json.Marshal(str)
+	c := appengine.NewContext(req)
+	c.Infof("%d", len(str))
+	io.WriteString(w, string(json))
+}
+
 func init() {
 	r := mux.NewRouter()
 	r.HandleFunc("/getpicture", NewPic)
+	r.HandleFunc("/sendlinks", sendLinks)
 	http.Handle("/", r)
 }
