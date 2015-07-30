@@ -16,9 +16,12 @@ func GetImages(col color.Color, count int, c appengine.Context) []string {
 	var links []string
 	var p color.Palette
 
-	p = palette.WebSafe
+	//get the index of the nearest color in a our color palette (256 colors)
+	p = palette.Plan9
 	id := p.Index(col)
+	//get images corresponding to our color
 	listImg, _ := service.GetData(c, id, count)
+	//create a table of corresponding links
 	if listImg != nil {
 		for _, v := range listImg {
 			links = append(links, v.Link)
@@ -30,13 +33,16 @@ func GetImages(col color.Color, count int, c appengine.Context) []string {
 func AddImage(link string, col color.Color, c appengine.Context) error {
 	var p color.Palette
 
-	p = palette.WebSafe
+	//get the index of the nearest color in a our color palette (256 colors)
+	p = palette.Plan9
 	id := p.Index(col)
+	//initalize the struct to be stored
 	img := models.Image{
 		Date:  time.Now(),
 		Color: id,
 		Link:  link,
 	}
+	//add the struct to the database
 	_, err := service.AddData(img, c)
 	return err
 }
