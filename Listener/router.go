@@ -11,7 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"util"
-	"log"
+
+	"database/controllers"
 )
 
 var titime int64
@@ -43,12 +44,13 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 					tempTime = v.CreatedTime
 				}
 				url := v.Images.StandardResolution.URL
-				log.Println(url)
 				rgb, err := util.PixColor(url, c)
 				if err != nil {
 					json.NewEncoder(w).Encode(err.Error())
-				} else {
-					json.NewEncoder(w).Encode(rgb)
+				}
+				err = controllers.AddImage(url, rgb, c)
+				if err != nil {
+					json.NewEncoder(w).Encode(err.Error())
 				}
 			}
 		}

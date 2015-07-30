@@ -7,10 +7,10 @@ import (
 	"database/models"
 )
 
-func AddData(img models.Image, c appengine.Context) string {
+func AddData(img models.Image, c appengine.Context) (string, error) {
 	key := datastore.NewIncompleteKey(c, "image", nil)
-	a, _ := datastore.Put(c, key, &img)
-	return (a.String())
+	a, err := datastore.Put(c, key, &img)
+	return a.String(), err
 }
 
 func GetData(c appengine.Context, id int, count int) ([]models.Image, error) {

@@ -4,7 +4,6 @@ import (
 	"appengine"
 	"image/color"
 	"image/color/palette"
-	"net/http"
 	"time"
 
 	"database/models"
@@ -13,8 +12,7 @@ import (
 
 var img models.Image
 
-func GetImages(col color.Color, count int, req *http.Request) []string {
-	c := appengine.NewContext(req)
+func GetImages(col color.Color, count int, c appengine.Context) []string {
 	var links []string
 	var p color.Palette
 
@@ -29,8 +27,7 @@ func GetImages(col color.Color, count int, req *http.Request) []string {
 	return links
 }
 
-func AddImage(link string, col color.Color, req *http.Request) {
-	c := appengine.NewContext(req)
+func AddImage(link string, col color.Color, c appengine.Context) error {
 	var p color.Palette
 
 	p = palette.WebSafe
@@ -40,5 +37,6 @@ func AddImage(link string, col color.Color, req *http.Request) {
 		Color: id,
 		Link:  link,
 	}
-	service.AddData(img, c)
+	_, err := service.AddData(img, c)
+	return err
 }
