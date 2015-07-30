@@ -61,7 +61,7 @@ func hex2int(h string) (uint8, uint8, uint8) {
 	sr := string(h[2])+string(h[3])
 	sg := string(h[4])+string(h[5])
 	sb := string(h[6])+string(h[7])
-	for i := 0; i < len(h); i++ {
+	/*for i := 0; i < len(h); i++ {
 		if 2 <= i && i <= 3 {
 			sr += string(h[i])
 		} else if 4 <= i && i <= 5 {
@@ -69,7 +69,7 @@ func hex2int(h string) (uint8, uint8, uint8) {
 		} else if 6 <= i && i <= 7 {
 			sb += string(h[i])
 		}
-	}
+	}*/
 	r := hex28bit(sr)
 	g := hex28bit(sg)
 	b := hex28bit(sb)
