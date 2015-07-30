@@ -2,21 +2,21 @@ package Listener
 
 import (
 	"appengine"
+	"appengine/datastore"
+	"appengine/memcache"
 	"appengine/urlfetch"
+	"database/controllers"
+	"database/models"
 	"encoding/json"
 	"github.com/carbocation/go-instagram/instagram"
 	"github.com/gorilla/mux"
+	"image/color"
 	"io"
-	"strconv"
-	"appengine/datastore"
-	"appengine/memcache"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"util"
-	"image/color"
-	"database/controllers"
-	"database/models"
 )
 
 func NewPic(w http.ResponseWriter, req *http.Request) {
@@ -72,22 +72,14 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 		Key:   "last",
 		Value: []byte(res[0].Images.StandardResolution.URL),
 	}
-	if err := memcache.Add(c, cache); err != nil{
+	if err := memcache.Add(c, cache); err != nil {
 		memcache.Set(c, cache)
 	}
 }
 
 func sendLinks(w http.ResponseWriter, req *http.Request) {
 	m, _ := url.ParseQuery(req.URL.RawQuery)
-	r, _ := strconv.Atoi(m["r"][0])
-	g, _ := strconv.Atoi(m["g"][0])
-	b, _ := strconv.Atoi(m["b"][0])
-	col := color.RGBA {
-		R: uint8(r),
-		G: uint8(g),
-		B: uint8(b),
-		A:0xff,
-	}
+	col, _ := strconv.Atoi(m["col"][0])
 	count, _ := strconv.Atoi(m["count"][0])
 	str := controllers.GetImages(col, count, appengine.NewContext(req))
 	json, _ := json.Marshal(str)
