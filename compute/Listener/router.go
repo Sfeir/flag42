@@ -22,5 +22,6 @@ func storeImages(w http.ResponseWriter, req *http.Request) {
 func init() {
 	r := mux.NewRouter()
 	r.HandleFunc("/store", storeImages)
+	r.HandleFunc("/compose", util/Compose)
 	http.Handle("/", r)
 }
