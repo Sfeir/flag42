@@ -20,9 +20,13 @@ func storeImages(w http.ResponseWriter, req *http.Request) {
 	// io.WriteString(w, string(json))
 }
 
+func ComposeFunc(w http.ResponseWriter, req *http.Request) {
+	util.Compose(req.URL.String())
+}
+
 func init() {
 	r := mux.NewRouter()
 	r.HandleFunc("/store", storeImages)
-	r.HandleFunc("/compose", util.Compose)
+	r.HandleFunc("/compose", ComposeFunc)
 	http.Handle("/", r)
 }
