@@ -75,8 +75,8 @@ func addImg(lib []imgLib, img image.Image, color.Color){
 */
 func ResizeImage(link string, size uint, client *http.Client) image.Image {
 	//getting the image from the url
-	resp, err := client.Get(link)
-	defer resp.Body.Close()
+	resp, _ := client.Get(link)
+	//defer resp.Body.Close()
 	//decode the image to get an image.Image data
 	img, _, _ := image.Decode(resp.Body)
 	//resizing the image
