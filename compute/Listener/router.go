@@ -1,7 +1,8 @@
 package Listener
 
 import (
-	//"appengine"
+	"appengine"
+	"appengine/urlfetch"
 	"github.com/gorilla/mux"
 	"net/http"
 	"net/url"
@@ -21,6 +22,8 @@ func storeImages(w http.ResponseWriter, req *http.Request) {
 }
 
 func ComposeFunc(w http.ResponseWriter, req *http.Request) {
+	c := appengine.NewContext(req)
+	client := urlfetch.Client(c)
 	util.Compose("https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11380762_1476796635966754_1332771621_n.jpg")
 }
 
