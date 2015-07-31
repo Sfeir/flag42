@@ -71,21 +71,24 @@ func addImg(lib []imgLib, img image.Image, color.Color){
 }
 */
 func ResizeImage(link string, size uint) image.Image {
+	print("BEFORE\n")
 	//getting the image from the url
-	resp, _ := http.Get(link)
+	resp, err := http.Get(link)
+	print("AFTER\n")
+	print(err.Error())
 	//defer resp.Body.Close()
 	//decode the image to get an image.Image data
 	img, _, _ := image.Decode(resp.Body)
+	print("DECODE\n")
 	//resizing the image
 	img = resize.Resize(size, size, img, resize.Bilinear)
+	print("RESIZE")
 	return img
 }
 
 func Compose(url string){
 	level:=0
-	print("BEFORE\n")
 	paneau:=ResizeImage(url, 640)
-	print("AFTER")
 	bounds:=paneau.Bounds()
 	var table [256]uint
 	var p color.Palette
