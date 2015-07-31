@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"storage"
+	"util"
 )
 
 func storeImages(w http.ResponseWriter, req *http.Request) {
@@ -22,6 +23,6 @@ func storeImages(w http.ResponseWriter, req *http.Request) {
 func init() {
 	r := mux.NewRouter()
 	r.HandleFunc("/store", storeImages)
-	r.HandleFunc("/compose", util/Compose)
+	r.HandleFunc("/compose", util.Compose)
 	http.Handle("/", r)
 }
