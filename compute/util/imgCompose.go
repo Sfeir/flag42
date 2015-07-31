@@ -81,25 +81,57 @@ func ResizeImage(link string, size uint) image.Image {
 	return img
 }
 
-func Compose(paneau image.Image, level uint8) draw.Image{
-	//var lib []imgLib
-	step:=uint8(math.Exp2(float64(level)))
+func Compose(url string){
+	level:=0
+	paneau:=ResizeImage(url, 640)
 	bounds:=paneau.Bounds()
-	paneau=resize.Resize(uint(bounds.Size().X)*uint(step),uint(bounds.Size().Y)*uint(step), paneau, resize.Bilinear)
-	bounds=paneau.Bounds()
-	//m:=image.NewRGBA(image.Rect(0,0,640,640))
-	//draw.Draw(m,m.Bounds(), paneau, image.ZP, draw.Src)
-	m:=image.NewRGBA(image.Rect(bounds.Min.X, bounds.Min.Y, bounds.Max.X, bounds.Max.Y))
 	var table [256]uint
-	for i:=0; i<256; i++{
-		table[i]=0
-	}
 	var p color.Palette
 	p = palette.Plan9
-	for y:=bounds.Min.Y; y<bounds.Max.Y; y+=int(step){
-		if y>40*int(step){break}
-		for x:=bounds.Min.X; x<bounds.Max.X; x+=int(step){
-			if x>40*int(step){break}
+	for level <= 6{
+		os.Mkdir(strconv.Itoa(int(level)), 0777)
+		os.Mkdir("colors/"+strconv.Itoa(int(level)), 0777)
+		//step:=uint8(math.Exp2(float64(level)))
+		if level==0{
+			m := image.NewRGBA(image.Rect(bounds.Min.X, bounds.Min.Y, bounds.Min.X+64, bounds.Min.Y+64))
+			//p:=image.Point{bounds.Min.X+64,bounds.Min.Y+64}
+			/*if table[id]==0{
+				SaveImg(m, uint(x), uint(y), level)
+			}else{
+				CopynSave(uint8(id), uint(x), uint(y), level)
+			}
+			table[id]++*/
+			sr:=m.Bounds()
+			location:=image.Point{bounds.Min.X, bounds.Min.Y}
+			r2:=image.Rectangle{location, location.Add(sr.Size())}
+			//r:=bounds.Sub(bounds.Min).Add(p)
+			draw.Draw(m, r2, paneau, bounds.Min, draw.Src)
+			SaveImg(m, 0, 0, uint8(level))
+			return
+		}/*else if level>=1 && level <=3{
+			nbimg:=uint(math.Exp2(math.Exp2(float64(level))))
+			log.Printf("nbimg=%d\n",nbimg)
+			m := image.NewRGBA(image.Rect(bounds.Min.X, bounds.Min.Y, bounds.Min.X+64, bounds.Min.Y+64))
+			for x:=0;uint8(x)<step;x++{
+				for y:=0;uint8(y)<step;y++{
+					p:=image.Point{bounds.Min.X+64/int(step),bounds.Min.Y+64/int(step)}
+					liens:=myGetImages(paneau, p, level)
+					img:=ResizeImage(liens[0], uint(64/step))
+					
+				}
+			}
+		}else{
+			for i:=0; i<256; i++{
+				table[i]=0
+			}
+		}*/
+		level++
+	}
+	log.Printf("%v%v%v\n", p, table)
+/*	for y:=bounds.Min.Y; y<bounds.Max.Y; y++{
+		//if y>10*int(step){break}
+		for x:=bounds.Min.X; x<bounds.Max.X; x++{
+			//if x>10*int(step){break}
 			col:=paneau.At(x, y)
 			id := p.Index(col)
 			if table[id]==0{
@@ -109,22 +141,29 @@ func Compose(paneau image.Image, level uint8) draw.Image{
 			}
 			table[id]++
 			//m.Set(x, y, paneau.At(x, y))
-			point:=image.Point{x,y}
+			//point:=image.Point{x,y}
 			//myGetImages(paneau, point, level, uri)
 			//img:=ResizeImage("https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11380762_1476796635966754_1332771621_n.jpg", uint(step))
-			cropIn("pixels/level"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", m, point)
+			//cropIn("pixels/level"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", m, point)
 			//addImg(lib, img, paneau.At(x,y))
 		}
 	}
-	return m
+*/
 }
 
 func CopynSave(id uint8, x, y uint, level uint8){
-	data,err:=ioutil.ReadFile("pixels/colors/level"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(id))+".jpg")
+	data,err:=ioutil.ReadFile("colors/"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(id))+".jpg")
 	if err!=nil{
 		log.Fatal(err)
 	}
-	ioutil.WriteFile("pixels/level"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", data, 0644)
+	ioutil.WriteFile(strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", data, 0644)
+}
+
+func SaveImg(img image.Image, x, y uint, level uint8){
+	buf := new(bytes.Buffer)
+	jpeg.Encode(buf, img, nil)
+	send:=buf.Bytes()
+	ioutil.WriteFile(strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", send, 0644)
 }
 
 func GetnSave(id uint8, x, y uint, level uint8){
@@ -140,33 +179,10 @@ func GetnSave(id uint8, x, y uint, level uint8){
 	buf := new(bytes.Buffer)
 	jpeg.Encode(buf, pixel, nil)
 	send:=buf.Bytes()
-	ioutil.WriteFile("pixels/colors/level"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(id))+".jpg", send, 0644)
-	ioutil.WriteFile("pixels/level"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", send, 0644)
+	ioutil.WriteFile("colors/"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(id))+".jpg", send, 0644)
+	ioutil.WriteFile(strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", send, 0644)
 }
-
-func initiate(){
-	level:=0
-	//step:=uint8(math.Exp2(float64(level)))
-	os.Mkdir("pixels", 0777)
-	os.Mkdir("pixels/colors", 0777)
-	img:=ResizeImage("https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11380762_1476796635966754_1332771621_n.jpg", 640)
-	var paneau draw.Image
-	for level <= 6 {
-		os.Mkdir("pixels/level"+strconv.Itoa(level), 0777)
-		os.Mkdir("pixels/colors/level"+strconv.Itoa(int(level)), 0777)
-		paneau=Compose(img, uint8(level))
-		/*
-		img:=ResizeImage("https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11380762_1476796635966754_1332771621_n.jpg", 640*uint(step))
-		paneau:=Compose(img, uint8(level), uri)*/
-		buf := new(bytes.Buffer)
-		jpeg.Encode(buf, paneau, nil)
-		send:=buf.Bytes()
-		ioutil.WriteFile("/home/dnguyen/Images/panel"+strconv.Itoa(level)+".jpg", send, 0644)
-		level++
-		//step=uint8(math.Exp2(float64(level)))
-	}
-	log.Printf("%#v", paneau)
-}
+/*
 func main(){
-	initiate()
-}
+	Compose("https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11380762_1476796635966754_1332771621_n.jpg")
+}*/

@@ -91,7 +91,7 @@ func PixColor(url string, c appengine.Context) (color.Color, error) {
 	}
 	blocksize := 4
 	tableau := make(map[string]int)
-	rgb := color.RGBA{R: 0, G: 0, B: 0, A: 1}
+	rgb := color.RGBA{R: 0, G: 0, B: 0, A: 0xff}
 	//m:=resize.Resize(64,64,r, resize.Bilinear)
 	bounds := m.Bounds()
 	dominantValue:=0
@@ -111,5 +111,6 @@ func PixColor(url string, c appengine.Context) (color.Color, error) {
 	}
 	result:=dominantColor
 	rgb.R, rgb.G, rgb.B = hex2int(result)
+	log.Printf("%#v\n", rgb)
 	return rgb, nil
 }
