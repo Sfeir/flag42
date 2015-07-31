@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-//	"math"
+	//	"math"
 	"strconv"
 
 	"github.com/nfnt/resize"
@@ -78,6 +78,12 @@ func ResizeImage(link string, size uint, client *http.Client) image.Image {
 	//getting the image from the url
 	resp, err := client.Get(link)
 	print("AFTER\n")
+	print(resp.Status)
+	print("STATUS\n")
+	print(resp.Header)
+	print("HEADER\n")
+	print(resp.Body)
+	print("BODY\n")
 	print(err.Error())
 	//defer resp.Body.Close()
 	//decode the image to get an image.Image data
