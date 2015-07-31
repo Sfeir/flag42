@@ -13,7 +13,7 @@ func storeImages(w http.ResponseWriter, req *http.Request) {
 	m, _ := url.ParseQuery(req.URL.RawQuery)
 	dir := m["dir"][0]
 	store := m["storage"][0]
-	ComputeToStorage(dir, store)
+	storage.ComputeToStorage(dir, store)
 	// c := appengine.NewContext(req)
 	// c.Infof("%d", len(str))
 	// io.WriteString(w, string(json))
