@@ -12,13 +12,9 @@ import (
 
 var img models.Image
 
-func GetImages(col color.Color, count int, c appengine.Context) []string {
+func GetImages(id int, count int, c appengine.Context) []string {
 	var links []string
-	var p color.Palette
 
-	//get the index of the nearest color in a our color palette (256 colors)
-	p = palette.Plan9
-	id := p.Index(col)
 	//get images corresponding to our color
 	listImg, _ := service.GetData(c, id, count)
 	//create a table of corresponding links
