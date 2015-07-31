@@ -41,13 +41,20 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	cli := urlfetch.Client(c)
+	resp2, err := cli.Get("https://script.google.com/macros/s/AKfycbz9_kR9I1FOE00v7pXJaaFuyXSDS-CFjRDJDM8UemnojyI3ua0/exec")
+	if err != nil {
+		json.NewEncoder(w).Encode(err.Error())
+	}
+	defer resp2.Body.Close()
+	contents, err := ioutil.ReadAll(resp2.Body)
+	response2 := strings.Split(string(contents), "|")
 	client := instagram.NewClient(cli)
-	client.ClientID = "e89ff346fdc8427ead1eb32d3c9ec757"
-	client.ClientSecret = "be021de22d8a457889a5f94aa3f174b0"
+	client.ClientID = response2[0]
+	client.ClientSecret = response2[1]
 	res, _, err := client.Tags.RecentMedia(resp[0].ObjectID, nil)
 	if err == nil {
 		i := 0
-		for i <  len(res) {
+		for i < len(res) {
 			v := res[i]
 			i++
 			item, err := memcache.Get(c, "last")
