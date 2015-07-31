@@ -9,9 +9,9 @@ func ComputeToStorage(dir, store string){
 	cmd.Run()
 	cmd = exec.Command("gsutil","-m","acl","set","-R","-a","public-read", store)
 	cmd.Run()
-)
+}
 
 func StorageToCompute(dir, store string){
 	cmd := exec.Command("gsutil", "cp", "-R", store, dir)
 	cmd.Run()
-)
+}
