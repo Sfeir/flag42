@@ -11,7 +11,8 @@ func ComputeToStorage(dir, store string) {
 	print(store)
 	cmd := exec.Command("gsutil", "cp", "-R", dir, store)
 	print("\n\nCaca\n")
-	cmd.Run()
+	err := cmd.Run()
+	print(err.Error())
 	cmd = exec.Command("gsutil", "-m", "acl", "set", "-R", "-a", "public-read", store)
 	cmd.Run()
 }
