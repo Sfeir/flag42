@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"github.com/carbocation/go-instagram/instagram"
 	"github.com/gorilla/mux"
-	"image/color"
 	"io"
 	"io/ioutil"
 	"net/http"
