@@ -83,7 +83,9 @@ func ResizeImage(link string, size uint) image.Image {
 
 func Compose(url string){
 	level:=0
+	print("BEFORE\n")
 	paneau:=ResizeImage(url, 640)
+	print("AFTER")
 	bounds:=paneau.Bounds()
 	var table [256]uint
 	var p color.Palette
