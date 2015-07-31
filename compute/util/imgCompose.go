@@ -174,22 +174,22 @@ func SaveImg(img image.Image, x, y uint, level uint8) {
 	ioutil.WriteFile(strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", send, 0644)
 }
 
-func GetnSave(id uint8, x, y uint, level uint8) {
-	//resp,_:=http.Get("https://flag-42.appspot.com/sendlinks?col="+strconv.Itoa(int(id))+"&count="+string(-1))
-	resp, _ := http.Get("https://flag-42.appspot.com/sendlinks?r=10&g=10&b=255&count=2")
-	data, _ := ioutil.ReadAll(resp.Body)
-	var v []string
-	json.Unmarshal(data, &v)
-	if v == nil {
-		log.Fatal("urls empty")
-	}
-	pixel := ResizeImage(v[0], uint(math.Exp2(float64(level))))
-	buf := new(bytes.Buffer)
-	jpeg.Encode(buf, pixel, nil)
-	send := buf.Bytes()
-	ioutil.WriteFile("colors/"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(id))+".jpg", send, 0644)
-	ioutil.WriteFile(strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", send, 0644)
-}
+// func GetnSave(id uint8, x, y uint, level uint8) {
+// 	//resp,_:=http.Get("https://flag-42.appspot.com/sendlinks?col="+strconv.Itoa(int(id))+"&count="+string(-1))
+// 	resp, _ := http.Get("https://flag-42.appspot.com/sendlinks?r=10&g=10&b=255&count=2")
+// 	data, _ := ioutil.ReadAll(resp.Body)
+// 	var v []string
+// 	json.Unmarshal(data, &v)
+// 	if v == nil {
+// 		log.Fatal("urls empty")
+// 	}
+// 		pixel := ResizeImage(v[0], uint(math.Exp2(float64(level))))
+// 	buf := new(bytes.Buffer)
+// 	jpeg.Encode(buf, pixel, nil)
+// 	send := buf.Bytes()
+// 	ioutil.WriteFile("colors/"+strconv.Itoa(int(level))+"/"+strconv.Itoa(int(id))+".jpg", send, 0644)
+// 	ioutil.WriteFile(strconv.Itoa(int(level))+"/"+strconv.Itoa(int(x))+"_"+strconv.Itoa(int(y))+".jpg", send, 0644)
+// }
 
 /*
 func main(){
