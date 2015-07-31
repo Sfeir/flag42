@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"image"
@@ -15,7 +15,7 @@ import (
 	"math"
 	"bytes"
 	"io/ioutil"
-	
+
 	"github.com/nfnt/resize"
 	"net/http"
 	"os"
@@ -43,7 +43,7 @@ func cropIn(filename string, paneau draw.Image, location image.Point){
 }
 /*
 func shuffle(uri []string) string{
-	// 
+	//
 }
 */
 // count = le nombre d'images
@@ -117,7 +117,7 @@ func Compose(url string){
 					p:=image.Point{bounds.Min.X+64/int(step),bounds.Min.Y+64/int(step)}
 					liens:=myGetImages(paneau, p, level)
 					img:=ResizeImage(liens[0], uint(64/step))
-					
+
 				}
 			}
 		}else{

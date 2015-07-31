@@ -17,7 +17,9 @@
 .group:before,
 .group:after { content:""; display:table; }
 .group:after { clear:both;}
-.group { zoom:1; /* For IE 6/7 */ }
+.group {
+    display: flex;
+    zoom:1; /* For IE 6/7 */ }
 /*  GRID OF TEN  */
 .span_10_of_10 {
     width: 100%;
@@ -57,4 +59,10 @@
 
 .span_1_of_10 {
     width: 64px;
+    height: 64px;
+    padding: 0px;
+}
+
+.no_scroll {
+    overflow: hidden;
 }
