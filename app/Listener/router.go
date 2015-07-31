@@ -18,6 +18,8 @@ import (
 	"util"
 )
 
+var counter int
+
 func NewPic(w http.ResponseWriter, req *http.Request) {
 	m, _ := url.ParseQuery(req.URL.RawQuery)
 	c := appengine.NewContext(req)
@@ -32,6 +34,12 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		json.NewEncoder(w).Encode(err.Error())
 	}
+	counter++
+	if counter == 10 {
+		counter = 0
+	} else {
+		return
+	}
 	cli := urlfetch.Client(c)
 	client := instagram.NewClient(cli)
 	client.ClientID = "e89ff346fdc8427ead1eb32d3c9ec757"
@@ -45,14 +53,12 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 			item, err := memcache.Get(c, "last")
 			url := v.Images.StandardResolution.URL
 			if err == nil && string(item.Value) == url {
-				c.Infof("Cache %d", i)
 				break
 			}
 			q := datastore.NewQuery("image").Filter("Link =", url)
 			var link []models.Image
 			q.GetAll(c, &link)
 			if len(link) != 0 {
-				c.Infof("Data %d", i)
 				break
 			}
 			rgb, err := util.PixColor(url, c)
@@ -88,6 +94,7 @@ func sendLinks(w http.ResponseWriter, req *http.Request) {
 }
 
 func init() {
+	counter = 0
 	r := mux.NewRouter()
 	r.HandleFunc("/getpicture", NewPic)
 	r.HandleFunc("/sendlinks", sendLinks)
