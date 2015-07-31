@@ -35,12 +35,12 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 	}
 	cli := urlfetch.Client(c)
 	client := instagram.NewClient(cli)
-	client.ClientID = "3f2ec4223de64513b58f6a2764083a66"
-	client.ClientSecret = "fb8a88e4743144b39b011a402a4a66c2"
+	client.ClientID = "e89ff346fdc8427ead1eb32d3c9ec757"
+	client.ClientSecret = "be021de22d8a457889a5f94aa3f174b0"
 	res, _, err := client.Tags.RecentMedia(resp[0].ObjectID, nil)
 	if err == nil {
 		i := 0
-		for true {
+		for i <  len(res) {
 			v := res[i]
 			i++
 			item, err := memcache.Get(c, "last")
@@ -79,15 +79,7 @@ func NewPic(w http.ResponseWriter, req *http.Request) {
 
 func sendLinks(w http.ResponseWriter, req *http.Request) {
 	m, _ := url.ParseQuery(req.URL.RawQuery)
-	r, _ := strconv.Atoi(m["r"][0])
-	g, _ := strconv.Atoi(m["g"][0])
-	b, _ := strconv.Atoi(m["b"][0])
-	col := color.RGBA {
-		R: uint8(r),
-		G: uint8(g),
-		B: uint8(b),
-		A:0xff,
-	}
+	col := strconv.Atoi(m["col"][0])
 	count, _ := strconv.Atoi(m["count"][0])
 	str := controllers.GetImages(col, count, appengine.NewContext(req))
 	json, _ := json.Marshal(str)
