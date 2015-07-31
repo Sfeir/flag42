@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"math"
+//	"math"
 	"strconv"
 
 	"github.com/nfnt/resize"
