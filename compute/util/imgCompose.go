@@ -87,7 +87,9 @@ func ResizeImage(link string, size uint, client *http.Client) image.Image {
 	print(err.Error())
 	//defer resp.Body.Close()
 	//decode the image to get an image.Image data
-	img, _, _ := image.Decode(resp.Body)
+	img, test, err := image.Decode(resp.Body)
+	print(test)
+	print(err.Error())
 	print("DECODE\n")
 	//resizing the image
 	img = resize.Resize(size, size, img, resize.Bilinear)
